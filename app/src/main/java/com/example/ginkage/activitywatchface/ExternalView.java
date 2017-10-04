@@ -8,23 +8,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
-public class ExternalView {
-  private FrameLayout rootView;
-  private View inflatedView;
-  private final LayoutInflater layoutInflater;
-  private @LayoutRes int layout;
+class ExternalView extends FrameLayout {
+    private View inflatedView;
+    private final LayoutInflater layoutInflater;
+    private @LayoutRes int layout;
 
-  public ExternalView(Context context, @LayoutRes int layout) {
-    this.rootView = new FrameLayout(context);
-    this.layoutInflater = context.getSystemService(LayoutInflater.class);
-    this.layout = layout;
-  }
-
-  public void draw(Canvas canvas, Rect bounds) {
-    if (inflatedView == null && layoutInflater != null) {
-      rootView.layout(bounds.left, bounds.top, bounds.right, bounds.bottom);
-      inflatedView = layoutInflater.inflate(layout, rootView);
+    ExternalView(Context context, @LayoutRes int layout) {
+        super(context);
+        this.layoutInflater = context.getSystemService(LayoutInflater.class);
+        this.layout = layout;
     }
-    inflatedView.draw(canvas);
-  }
+
+    void draw(Canvas canvas, Rect bounds) {
+        if (inflatedView == null && layoutInflater != null) {
+            inflatedView = layoutInflater.inflate(layout, this);
+            measure(
+                    MeasureSpec.makeMeasureSpec(bounds.right - bounds.left, MeasureSpec.EXACTLY),
+                    MeasureSpec.makeMeasureSpec(bounds.bottom - bounds.top, MeasureSpec.EXACTLY));
+            layout(bounds.left, bounds.top, bounds.right, bounds.bottom);
+        }
+        draw(canvas);
+    }
 }
