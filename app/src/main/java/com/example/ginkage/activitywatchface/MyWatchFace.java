@@ -129,6 +129,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
         private boolean mAmbient;
         private boolean mLowBitAmbient;
         private boolean mBurnInProtection;
+        private long lastTapDown;
 
         private ExternalView externalView;
 
@@ -346,17 +347,20 @@ public class MyWatchFace extends CanvasWatchFaceService {
             switch (tapType) {
                 case TAP_TYPE_TOUCH:
                     // The user has started touching the screen.
-                    externalView.dispatchTouchEvent(MotionEvent.obtain(eventTime, eventTime, MotionEvent.ACTION_DOWN, x, y, 0));
+                    externalView.dispatchTouchEvent(
+                            MotionEvent.obtain(
+                                    eventTime, eventTime, MotionEvent.ACTION_DOWN, x, y, 0));
+                    lastTapDown = eventTime;
                     break;
                 case TAP_TYPE_TOUCH_CANCEL:
                     // The user has started a different gesture or otherwise cancelled the tap.
-                    externalView.dispatchTouchEvent(MotionEvent.obtain(eventTime, eventTime, MotionEvent.ACTION_UP, x, y, 0));
+                    externalView.dispatchTouchEvent(
+                            MotionEvent.obtain(
+                                    lastTapDown, eventTime, MotionEvent.ACTION_UP, x, y, 0));
                     break;
                 case TAP_TYPE_TAP:
                     // The user has completed the tap gesture.
                     // TODO: Add code to handle the tap gesture.
-                    Toast.makeText(getApplicationContext(), R.string.message, Toast.LENGTH_SHORT)
-                            .show();
                     break;
             }
             invalidate();
